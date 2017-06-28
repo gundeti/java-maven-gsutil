@@ -1,4 +1,17 @@
-FROM openjdk:8-jdk
+FROM debian:jessie-backports
+
+MAINTAINER Junji Watanabe
+
+#installing java
+RUN \
+  apt-get update && \
+  apt-get upgrade -y && \
+  apt-get install -y openjdk-8-jdk
+
+# print version
+RUN java -version
+
+#End of installing Java
 
 # installing maven
 ARG MAVEN_VERSION=3.3.9
