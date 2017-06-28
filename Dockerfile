@@ -1,23 +1,29 @@
 FROM taivokasper/debian-maven3:latest
 
 
-# Install dependencies
-RUN DEBIAN_FRONTEND=noninteractive; \
-    apt-get update && \
-    apt-get -y install \
-    wget \
-    python \
-    # for crcmod installation
-    gcc python-dev python-setuptools
+ENV HOME /root
+WORKDIR /root
 
-RUN easy_install -U pip && \
-    pip install -U crcmod
-
-RUN cd /root && \
-    wget --no-verbose "https://storage.googleapis.com/pub/gsutil.tar.gz" && \
-    tar -xf gsutil.tar.gz
-
-RUN DEBIAN_FRONTEND=noninteractive; \
-    apt-get -y purge wget gcc python-dev python-setuptools
-
-ENV PATH "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/gsutil"
+RUN (echo "deb https://packages.cloud.google.com/apt cloud-sdk-$(lsb_release -c -s) main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list) && \
+	(curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -) && \
+	apt-get update && \
+	apt-get -y upgrade && \
+	apt-get -y install \
+		curl \
+		google-cloud-sdk \
+		google-cloud-sdk-app-engine-python \
+		kubectl \
+		python-crypto \
+		vim \
+		wget \
+	&& \
+	rm -rf /var/lib/apt/lists/* && \
+	wget -q 'https://bootstrap.pypa.io/get-pip.py' -O get-pip.py && \
+	python get-pip.py && \
+	rm get-pip.py && \
+	pip install \
+		kubernetes \
+		oauth2client \
+		google-api-python-client \
+		Jinja2 \
+		google-api-helper
